@@ -68,6 +68,13 @@ module.exports = function(RED) {
                 value = newValue;
             }
 
+            // handle bigint
+            value = value.map(list => list.map(v => {
+                return (typeof v !== 'bigint') ? v
+                    : (v >= Number.MIN_SAFE_INTEGER && v <= Number.MAX_SAFE_INTEGER) ? parseInt(v)
+                    : v.toString()
+            }))
+
             clearError();
             data = {
                 value,
