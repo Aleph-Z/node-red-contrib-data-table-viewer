@@ -126,6 +126,21 @@
             }
         }
 
+        var node_first, node_last;
+        var range_select = function () {
+            window.getSelection().removeAllRanges();
+            if (!node_first) return;
+            node_last = node_last || node_first;
+            const range = new Range();
+            if (node_first.offsetTop < node_last.offsetTop || (node_first.offsetTop === node_last.offsetTop && node_first.offsetLeft<=node_last.offsetLeft)){
+                range.setStartBefore(node_first);
+                range.setEndAfter(node_last);
+            }else{
+                range.setStartBefore(node_last);
+                range.setEndAfter(node_first);
+            }
+            window.getSelection().addRange(range);
+        }
 
         var render = function (id, inputData, node) {
 
@@ -182,7 +197,7 @@
                         'height': tableHeight-5
                     });
             var bd = fo.append('xhtml:div')
-                .style({
+                    .style({
                     "height": tableHeight-10 + "px", 
                     "width": tableWidth-10 + "px",
                     "overflow": "scroll",
@@ -190,6 +205,10 @@
                 });
 
             var tt = bd.append('table')
+                .on("mouseleave", function(){
+                    if (d3.event.toElement?.getAttribute('class')?.includes('nr-ui-view-lasso')) return;
+                    range_select();
+                })
                 .style({
                     "max-height": tableHeight-10 + "px", 
                     "max-width": tableWidth-10 + "px",
@@ -210,6 +229,9 @@
                 .data(data[0])
                 .enter().append("th")
                 .text(function(d) { return d; })
+                .on('mousedown',function(){node_first=this;})
+                .on('mouseenter',function(){node_last=this;range_select();})
+                .on('mouseup',function(){node_last=this;range_select();})
                 .style("font-size", "10px")
                 .style("border-right", "1px black solid")
                 .style("border-top", "1px black solid")
@@ -234,6 +256,9 @@
                 .on("mouseout", function(){
                     d3.select(this).style("background-color", "#E8F0E8");
                 })
+                .on('mousedown',function(){node_first=this;})
+                .on('mouseenter',function(){node_last=this;range_select();})
+                .on('mouseup',function(){node_last=this;range_select();})
                 .text(function(d){return d;})
                 .style({
                     "font-size": "10px",
