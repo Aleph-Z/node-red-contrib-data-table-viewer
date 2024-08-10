@@ -185,19 +185,18 @@
 
             d3table.attr("transform", `translate(${4},${50})`);
             var grid =d3table.append("svg")
-                .attr("width", tableWidth-5)
-                .attr("height", tableHeight-5)
+                .attr({"width": tableWidth-5, "height": tableHeight-5})
                 .attr("viewBox", [0, 0, tableWidth-5, tableHeight-5]);
 
             var fo = grid.append('foreignObject')
-                    .attr({
-                        'x': 0,
-                        'y': 0,
-                        'width': tableWidth-5,
-                        'height': tableHeight-5
-                    });
+                .attr({
+                    'x': 0,
+                    'y': 0,
+                    'width': tableWidth-5,
+                    'height': tableHeight-5
+                });
             var bd = fo.append('xhtml:div')
-                    .style({
+                .style({
                     "height": tableHeight-10 + "px", 
                     "width": tableWidth-10 + "px",
                     "overflow": "scroll",
@@ -264,6 +263,48 @@
                     "font-size": "10px",
                     "text-align": "center",
                 });
+
+            var resizer = bd.append('div')
+                .style({
+                    position: 'absolute',
+                    width: '5px',
+                    right: '0px',
+                    height: '5px',
+                    bottom: '0px',
+                    background: 'orange',
+                    opacity: 0.9,
+                    cursor: 'pointer'
+                });
+            
+            var dragResize = d3.behavior.drag()
+                .on('drag', function() {
+                    let scale = (+document.querySelector('g.red-ui-workspace-chart-event-layer').getAttribute('transform')?.replace(/^scale\(([\d.]+)\)$/,'$1'))||1
+
+                    // Determine resizer position relative to parent
+                    let [x,y] = d3.mouse(this.parentNode);
+
+                    // Avoid negative or really small widths
+                    x = Math.max(50, x/scale);
+                    y = Math.max(50, y/scale);
+
+                    node.width = parseInt(x+10);
+                    node.height = parseInt(y+10);
+
+                    grid.attr({width:x+5, height:y+5})
+                        .attr("viewBox", [0, 0, x+5, y+5]);
+                    fo.attr({width:x+5, height:y+5});
+                    bd.style({width: x + 'px', height: y + 'px'});
+                    tt.style({'max-width': x + 'px', 'max-height': y + 'px'});
+                })
+                .on("dragend", function(){
+                    remove(id);
+                    render(id, inputData, node);
+                    RED.editor.updateNodeProperties(node,null)
+                    RED.editor.validateNode(node)
+                    RED.nodes.dirty(true);
+                });
+
+            resizer.call(dragResize);
         }
 
         RED.comms.subscribe('table-viewer', function (event, data) {
