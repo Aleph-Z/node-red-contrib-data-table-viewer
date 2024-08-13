@@ -144,8 +144,8 @@
 
         var render = function (id, inputData, node) {
 
-            let tableWidth = node.width ? parseInt(node.width) : DEFAULT_CHART_WIDTH;
-            let tableHeight = node.height ? parseInt(node.height) : DEFAULT_CHART_HEIGHT;
+            let tableWidth = node.width ? parseInt(node.width) : DEFAULT_TABLE_WIDTH;
+            let tableHeight = node.height ? parseInt(node.height) : DEFAULT_TABLE_HEIGHT;
             let data = inputData.value;
 
             // create table
@@ -157,17 +157,17 @@
             bubble.setAttribute('id', "table-viewer-output-bubble-" + id)
             bubble.setAttribute('style', 'fill:#E8F0E8')
             bubble.setAttribute('stroke', '#999999')
-            chartBB = {
+            const box = {
                 x: 0,
                 y: 45,
                 width: tableWidth,
                 height: tableHeight
             }
 
-            const left = chartBB.x;
-            const top = chartBB.y + 2;
-            const right = chartBB.x + chartBB.width;
-            const bottom = chartBB.y + chartBB.height;
+            const left = box.x;
+            const top = box.y + 2;
+            const right = box.x + box.width;
+            const bottom = box.y + box.height;
 
             const points =
                 `${left + 4},${top - 17} ${left + 4},${top} ` +
