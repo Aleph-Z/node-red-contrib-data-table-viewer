@@ -297,8 +297,7 @@
                     tt.style({'max-width': x + 'px', 'max-height': y + 'px'});
                 })
                 .on("dragend", function(){
-                    remove(id);
-                    render(id, inputData, node);
+                    redraw(node);
                     RED.editor.updateNodeProperties(node,null)
                     RED.editor.validateNode(node)
                     RED.nodes.dirty(true);
@@ -323,7 +322,7 @@
                 latestData[data.id] = tableData;
 
                 remove(data.id);
-                render(data.id, tableData, node);
+                render(data.id, latestData[data.id], node);
             } else {
                 delete latestData[data.id];
                 remove(data.id);
@@ -333,6 +332,10 @@
 </script>
 
 <script type="text/html" data-template-name="table-viewer">
+    <div class="form-row">
+        <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
+        <input type="text" id="node-input-name" placeholder="Name">
+    </div>
     <div class="form-row">
         <label style="padding-top: 8px" for="node-input-property"><i class="fa fa-ellipsis-h"></i> Property</label>
         <input type="text" id="node-input-property" style="width:70%">
@@ -347,10 +350,6 @@
     <div class="form-row">
         <label for="node-input-rows"><i class="fa fa-table"></i>Rows</label>
         <input type="number" id="node-input-rows">
-    </div>
-    <div class="form-row">
-        <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
-        <input type="text" id="node-input-name" placeholder="Name">
     </div>
 </script>
 
